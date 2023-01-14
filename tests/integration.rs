@@ -72,3 +72,18 @@ fn subgraph() {
 
     compare(&graph, false, expected);
 }
+
+#[test]
+fn cluster() {
+    let graph = Graph::new(None).subgraph(Graph::new(None).cluster().node(Node::new("a")));
+
+    let expected = indoc! {"
+        graph {
+          subgraph cluster {
+            a
+          }
+        }"
+    };
+
+    compare(&graph, false, expected);
+}

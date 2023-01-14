@@ -11,7 +11,7 @@ pub use graph::Graph;
 pub use node::{Node, NodeAttribute, Shape};
 
 pub fn write(graph: &Graph, directed: bool, mut w: impl io::Write) -> io::Result<()> {
-    graph.write(directed, false, &mut w)
+    graph.write(directed, graph::GraphType::Root, &mut w)
 }
 
 pub fn write_to_string(graph: &Graph, directed: bool) -> io::Result<String> {

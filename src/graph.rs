@@ -5,6 +5,7 @@ use std::io;
 #[derive(Default)]
 pub struct Graph {
     pub name: Option<String>,
+    cluster: bool,
     pub subgraphs: Vec<Graph>,
     pub nodes: Vec<Node>,
     pub edges: Vec<Edge>,
@@ -23,6 +24,11 @@ impl Graph {
         self
     }
 
+    pub fn cluster(mut self) -> Self {
+        self.cluster = true;
+        self
+    }
+
     pub fn node(mut self, node: Node) -> Self {
         self.nodes.push(node);
         self
@@ -36,19 +42,34 @@ impl Graph {
     pub(crate) fn write(
         &self,
         directed: bool,
-        subgraph: bool,
+        graph_type: GraphType,
         mut w: impl io::Write,
     ) -> io::Result<()> {
-        if subgraph {
-            write!(w, "subgraph")?
-        } else if directed {
-            write!(w, "digraph")?
-        } else {
-            write!(w, "graph")?
-        }
+        let cluster = match graph_type {
+            GraphType::Root => {
+                if directed {
+                    write!(w, "digraph")?
+                } else {
+                    write!(w, "graph")?
+                }
+
+                false
+            }
+            GraphType::Subgraph { cluster } => {
+                write!(w, "subgraph")?;
+                cluster
+            }
+        };
 
         if let Some(name) = &self.name {
-            write!(w, " {}", sanitize(name))?;
+            write!(
+                w,
+                " {}{}",
+                if cluster { "cluster_" } else { "" },
+                sanitize(name)
+            )?;
+        } else if cluster {
+            write!(w, " cluster")?;
         }
 
         writeln!(w, " {{")?;
@@ -58,7 +79,13 @@ impl Graph {
 
         // Subgraphs
         for subgraph in &self.subgraphs {
-            subgraph.write(directed, true, &mut indented)?;
+            subgraph.write(
+                directed,
+                GraphType::Subgraph {
+                    cluster: subgraph.cluster,
+                },
+                &mut indented,
+            )?;
             writeln!(indented)?;
         }
 
@@ -78,4 +105,9 @@ impl Graph {
 
         Ok(())
     }
+}
+
+pub enum GraphType {
+    Root,
+    Subgraph { cluster: bool },
 }
