@@ -25,7 +25,7 @@ impl Edge {
         self
     }
 
-    pub fn write(&self, directed: bool, mut w: impl io::Write) -> io::Result<()> {
+    pub(crate) fn write(&self, directed: bool, mut w: impl io::Write) -> io::Result<()> {
         if directed {
             write!(w, "{} -> {}", self.from, self.to)?;
         } else {

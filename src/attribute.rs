@@ -6,7 +6,7 @@ pub struct Attribute {
 }
 
 impl Attribute {
-    pub fn write(&self, mut w: impl io::Write) -> io::Result<()> {
+    pub(crate) fn write(&self, mut w: impl io::Write) -> io::Result<()> {
         write!(w, "{}={}", self.name, self.value)
     }
 }

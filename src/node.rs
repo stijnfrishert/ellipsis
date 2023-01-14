@@ -23,7 +23,7 @@ impl Node {
         self
     }
 
-    pub fn write(&self, mut w: impl io::Write) -> io::Result<()> {
+    pub(crate) fn write(&self, mut w: impl io::Write) -> io::Result<()> {
         write!(w, "{}", self.id)?;
 
         if !self.attributes.is_empty() {
