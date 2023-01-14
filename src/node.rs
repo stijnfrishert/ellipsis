@@ -1,9 +1,8 @@
-use crate::Attribute;
 use std::io;
 
 pub struct Node {
     pub id: String,
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<NodeAttribute>,
 }
 
 impl Node {
@@ -14,11 +13,16 @@ impl Node {
         }
     }
 
-    pub fn attribute(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
-        self.attributes.push(Attribute {
-            name: name.into(),
-            value: value.into(),
-        });
+    pub fn label(self, value: impl Into<String>) -> Self {
+        self.attribute(NodeAttribute::Label(value.into()))
+    }
+
+    pub fn shape(self, value: Option<Shape>) -> Self {
+        self.attribute(NodeAttribute::Shape(value))
+    }
+
+    pub fn attribute(mut self, attribute: NodeAttribute) -> Self {
+        self.attributes.push(attribute);
 
         self
     }
@@ -31,7 +35,8 @@ impl Node {
 
             let mut count = self.attributes.len();
             for attribute in &self.attributes {
-                attribute.write(&mut w)?;
+                let (key, value) = attribute.pair();
+                write!(w, "{key}={value}")?;
 
                 count -= 1;
                 if count > 0 {
@@ -42,5 +47,49 @@ impl Node {
         }
 
         Ok(())
+    }
+}
+
+pub enum NodeAttribute {
+    Label(String),
+    Shape(Option<Shape>),
+    Unknown(String, String),
+}
+
+impl NodeAttribute {
+    pub fn pair(&self) -> (&str, String) {
+        match self {
+            Self::Label(value) => ("label", value.clone()),
+            Self::Shape(value) => (
+                "shape",
+                match value {
+                    Some(shape) => shape.as_str().to_string(),
+                    None => String::from("none"),
+                },
+            ),
+            Self::Unknown(key, value) => (key, value.clone()),
+        }
+    }
+}
+
+pub enum Shape {
+    Box,
+    Circle,
+    Diamond,
+    Square,
+    Note,
+    Unknown(String),
+}
+
+impl Shape {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Box => "box",
+            Self::Circle => "circle",
+            Self::Diamond => "diamond",
+            Self::Square => "square",
+            Self::Note => "note",
+            Self::Unknown(str) => str,
+        }
     }
 }

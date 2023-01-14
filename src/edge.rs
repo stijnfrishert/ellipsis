@@ -1,10 +1,9 @@
-use crate::Attribute;
 use std::io;
 
 pub struct Edge {
     pub from: String,
     pub to: String,
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<EdgeAttribute>,
 }
 
 impl Edge {
@@ -16,12 +15,16 @@ impl Edge {
         }
     }
 
-    pub fn attribute(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
-        self.attributes.push(Attribute {
-            name: name.into(),
-            value: value.into(),
-        });
+    pub fn label(self, value: impl Into<String>) -> Self {
+        self.attribute(EdgeAttribute::Label(value.into()))
+    }
 
+    pub fn pen_width(self, value: f32) -> Self {
+        self.attribute(EdgeAttribute::PenWidth(value))
+    }
+
+    pub fn attribute(mut self, attribute: EdgeAttribute) -> Self {
+        self.attributes.push(attribute);
         self
     }
 
@@ -37,7 +40,8 @@ impl Edge {
 
             let mut count = self.attributes.len();
             for attribute in &self.attributes {
-                attribute.write(&mut w)?;
+                let (key, value) = attribute.pair();
+                write!(w, "{key}={value}")?;
 
                 count -= 1;
                 if count > 0 {
@@ -48,5 +52,21 @@ impl Edge {
         }
 
         Ok(())
+    }
+}
+
+pub enum EdgeAttribute {
+    Label(String),
+    PenWidth(f32),
+    Unknown(String, String),
+}
+
+impl EdgeAttribute {
+    pub fn pair(&self) -> (&str, String) {
+        match self {
+            Self::Label(value) => ("label", value.clone()),
+            Self::PenWidth(value) => ("penwidth", format!("{value}")),
+            Self::Unknown(key, value) => (key, value.clone()),
+        }
     }
 }
