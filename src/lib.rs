@@ -4,6 +4,8 @@ mod edge;
 mod graph;
 mod node;
 
+pub(crate) mod utils;
+
 pub use edge::{Edge, EdgeAttribute};
 pub use graph::Graph;
 pub use node::{Node, NodeAttribute, Shape};

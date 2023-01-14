@@ -1,4 +1,4 @@
-use crate::{Edge, Node};
+use crate::{utils::sanitize, Edge, Node};
 use indent_write::io::IndentWriter;
 use std::io;
 
@@ -45,7 +45,7 @@ impl Graph {
         }
 
         if let Some(name) = &self.name {
-            write!(w, " {name}")?;
+            write!(w, " {}", sanitize(name))?;
         }
 
         writeln!(w, " {{")?;

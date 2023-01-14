@@ -1,3 +1,4 @@
+use crate::utils::sanitize;
 use std::io;
 
 pub struct Edge {
@@ -49,7 +50,7 @@ impl Edge {
             let mut count = self.attributes.len();
             for attribute in &self.attributes {
                 let (key, value) = attribute.pair();
-                write!(w, "{key}={value}")?;
+                write!(w, "{}={}", sanitize(key), sanitize(&value))?;
 
                 count -= 1;
                 if count > 0 {

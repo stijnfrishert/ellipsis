@@ -1,3 +1,4 @@
+use crate::utils::sanitize;
 use std::io;
 
 pub struct Node {
@@ -28,7 +29,7 @@ impl Node {
     }
 
     pub(crate) fn write(&self, mut w: impl io::Write) -> io::Result<()> {
-        write!(w, "{}", self.id)?;
+        write!(w, "{}", sanitize(&self.id))?;
 
         if !self.attributes.is_empty() {
             write!(w, " [")?;
@@ -36,7 +37,7 @@ impl Node {
             let mut count = self.attributes.len();
             for attribute in &self.attributes {
                 let (key, value) = attribute.pair();
-                write!(w, "{key}={value}")?;
+                write!(w, "{}={}", sanitize(key), sanitize(&value))?;
 
                 count -= 1;
                 if count > 0 {
