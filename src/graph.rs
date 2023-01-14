@@ -11,8 +11,11 @@ pub struct Graph {
 }
 
 impl Graph {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(name: Option<String>) -> Self {
+        Self {
+            name,
+            ..Default::default()
+        }
     }
 
     pub fn subgraph(mut self, subgraph: Graph) -> Self {

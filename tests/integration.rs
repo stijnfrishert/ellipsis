@@ -9,10 +9,10 @@ fn compare(graph: &Graph, directed: bool, expected: &str) {
 
 #[test]
 fn empty() {
-    let graph = Graph::new();
+    let graph = Graph::new(Some("root".to_string()));
 
     let expected = indoc! {"
-        graph {
+        graph root {
         }"
     };
 
@@ -21,7 +21,7 @@ fn empty() {
 
 #[test]
 fn single_node() {
-    let graph = Graph::new().node(Node::new("a").label("A").shape(Some(Shape::Box)));
+    let graph = Graph::new(None).node(Node::new("a").label("A").shape(Some(Shape::Box)));
 
     let expected = indoc! {"
         graph {
@@ -34,7 +34,7 @@ fn single_node() {
 
 #[test]
 fn edge_undirected() {
-    let graph = Graph::new().edge(Edge::new("a", "b").label("E").pen_width(2.0));
+    let graph = Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0));
 
     let expected = indoc! {"
         graph {
@@ -47,7 +47,7 @@ fn edge_undirected() {
 
 #[test]
 fn edge_directed() {
-    let graph = Graph::new().edge(Edge::new("a", "b").label("E").pen_width(2.0));
+    let graph = Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0));
 
     let expected = indoc! {"
         digraph {
@@ -60,7 +60,7 @@ fn edge_directed() {
 
 #[test]
 fn subgraph() {
-    let graph = Graph::new().subgraph(Graph::new().node(Node::new("a")));
+    let graph = Graph::new(None).subgraph(Graph::new(None).node(Node::new("a")));
 
     let expected = indoc! {"
         graph {
