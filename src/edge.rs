@@ -39,9 +39,9 @@ impl Edge {
 
     pub(crate) fn write(&self, directed: bool, mut w: impl io::Write) -> io::Result<()> {
         if directed {
-            write!(w, "{} -> {}", self.from, self.to)?;
+            write!(w, "{} -> {}", sanitize(&self.from), sanitize(&self.to))?;
         } else {
-            write!(w, "{} -- {}", self.from, self.to)?;
+            write!(w, "{} -- {}", sanitize(&self.from), sanitize(&self.to))?;
         }
 
         if !self.attributes.is_empty() {
