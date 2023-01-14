@@ -23,6 +23,14 @@ impl Edge {
         self.attribute(EdgeAttribute::PenWidth(value))
     }
 
+    pub fn head_label(self, value: impl Into<String>) -> Self {
+        self.attribute(EdgeAttribute::HeadLabel(value.into()))
+    }
+
+    pub fn tail_label(self, value: impl Into<String>) -> Self {
+        self.attribute(EdgeAttribute::TailLabel(value.into()))
+    }
+
     pub fn attribute(mut self, attribute: EdgeAttribute) -> Self {
         self.attributes.push(attribute);
         self
@@ -58,6 +66,8 @@ impl Edge {
 pub enum EdgeAttribute {
     Label(String),
     PenWidth(f32),
+    HeadLabel(String),
+    TailLabel(String),
     Unknown(String, String),
 }
 
@@ -66,6 +76,8 @@ impl EdgeAttribute {
         match self {
             Self::Label(value) => ("label", value.clone()),
             Self::PenWidth(value) => ("penwidth", format!("{value}")),
+            Self::HeadLabel(value) => ("headlabel", value.clone()),
+            Self::TailLabel(value) => ("taillabel", value.clone()),
             Self::Unknown(key, value) => (key, value.clone()),
         }
     }
