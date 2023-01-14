@@ -1,4 +1,4 @@
-use ellipsis::{export, Graph, Node};
+use ellipsis::{Edge, Graph, Node};
 use indoc::indoc;
 
 #[test]
@@ -6,7 +6,7 @@ fn empty() {
     let graph = Graph::default();
 
     let mut vec = Vec::new();
-    export(&graph, &mut vec).unwrap();
+    graph.write(&mut vec).unwrap();
 
     let expected = indoc! {"
         digraph {
@@ -26,11 +26,32 @@ fn single_node() {
     );
 
     let mut vec = Vec::new();
-    export(&graph, &mut vec).unwrap();
+    graph.write(&mut vec).unwrap();
 
     let expected = indoc! {"
         digraph {
           a [label=A, shape=box]
+        }"
+    };
+
+    assert_eq!(String::from_utf8(vec).unwrap(), expected);
+}
+
+#[test]
+fn edge() {
+    let mut graph = Graph::default();
+    graph.edges.push(
+        Edge::new("a", "b")
+            .attribute("label", "E")
+            .attribute("penwidth", "2"),
+    );
+
+    let mut vec = Vec::new();
+    graph.write(&mut vec).unwrap();
+
+    let expected = indoc! {"
+        digraph {
+          a -> b [label=E, penwidth=2]
         }"
     };
 
