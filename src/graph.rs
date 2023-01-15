@@ -62,12 +62,12 @@ impl Graph {
         };
 
         if let Some(name) = &self.name {
-            write!(
-                w,
-                " {}{}",
-                if cluster { "cluster_" } else { "" },
-                sanitize(name)
-            )?;
+            if cluster {
+                let name = format!("cluster_{name}");
+                write!(w, " {}", sanitize(&name))?;
+            } else {
+                write!(w, " {}", sanitize(name))?;
+            };
         } else if cluster {
             write!(w, " cluster")?;
         }
