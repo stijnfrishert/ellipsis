@@ -1,4 +1,4 @@
-use std::{io, path::Path, process::Command};
+use std::{fs::File, io, path::Path, process::Command};
 use tempfile::NamedTempFile;
 
 mod edge;
@@ -32,11 +32,21 @@ impl Dot {
         Ok(String::from_utf8(vec).unwrap())
     }
 
-    pub fn render(&self, path: impl AsRef<Path>) -> io::Result<bool> {
-        let temp = NamedTempFile::new().unwrap();
-        self.write(&temp)?;
+    pub fn render(&self, path: impl AsRef<Path>, write_dot_file: bool) -> io::Result<bool> {
+        let path = path.as_ref();
 
-        Self::render_from_file(temp.path(), path)
+        if write_dot_file {
+            let dot_path = path.with_extension("dot");
+            let dot_file = File::create(&dot_path)?;
+            self.write(&dot_file)?;
+
+            Self::render_from_file(&dot_path, path)
+        } else {
+            let temp = NamedTempFile::new().unwrap();
+            self.write(&temp)?;
+
+            Self::render_from_file(temp.path(), path)
+        }
     }
 
     pub fn render_from_file(dot: impl AsRef<Path>, path: impl AsRef<Path>) -> io::Result<bool> {
