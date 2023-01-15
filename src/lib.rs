@@ -1,4 +1,5 @@
-use std::io;
+use std::{io, path::Path, process::Command};
+use tempfile::NamedTempFile;
 
 mod edge;
 mod graph;
@@ -29,5 +30,23 @@ impl Dot {
         let mut vec = Vec::new();
         self.write(&mut vec)?;
         Ok(String::from_utf8(vec).unwrap())
+    }
+
+    pub fn render(&self, path: impl AsRef<Path>) -> io::Result<bool> {
+        let temp = NamedTempFile::new().unwrap();
+        self.write(&temp)?;
+
+        Self::render_from_file(temp.path(), path)
+    }
+
+    pub fn render_from_file(dot: impl AsRef<Path>, path: impl AsRef<Path>) -> io::Result<bool> {
+        let status = Command::new("dot")
+            .arg("-Tpng")
+            .arg("-o")
+            .arg(path.as_ref())
+            .arg(dot.as_ref())
+            .status()?;
+
+        Ok(status.success())
     }
 }
