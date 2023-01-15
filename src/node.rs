@@ -22,8 +22,20 @@ impl Node {
         self.attribute(NodeAttribute::Shape(value))
     }
 
-    pub fn color(self, value: Color) -> Self {
-        self.attribute(NodeAttribute::Color(value))
+    /// The color of the outline
+    pub fn color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
+        let color = value.try_into()?;
+        Ok(self.attribute(NodeAttribute::Color(color)))
+    }
+
+    pub fn fill_color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
+        let color = value.try_into()?;
+        Ok(self.attribute(NodeAttribute::FillColor(color)))
+    }
+
+    pub fn font_color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
+        let color = value.try_into()?;
+        Ok(self.attribute(NodeAttribute::FontColor(color)))
     }
 
     pub fn attribute(mut self, attribute: NodeAttribute) -> Self {
@@ -58,7 +70,11 @@ impl Node {
 pub enum NodeAttribute {
     Label(String),
     Shape(Option<Shape>),
+
+    /// The color of the outline
     Color(Color),
+    FillColor(Color),
+    FontColor(Color),
     Unknown(String, String),
 }
 
@@ -74,6 +90,8 @@ impl NodeAttribute {
                 },
             ),
             Self::Color(color) => ("color", color.as_string()),
+            Self::FillColor(color) => ("fillcolor", color.as_string()),
+            Self::FontColor(color) => ("fontcolor", color.as_string()),
             Self::Unknown(key, value) => (key, value.clone()),
         }
     }

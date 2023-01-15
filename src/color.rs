@@ -95,6 +95,14 @@ impl FromStr for Color {
     }
 }
 
+impl TryFrom<&str> for Color {
+    type Error = ColorParseError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        value.parse::<Color>()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
