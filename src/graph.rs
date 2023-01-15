@@ -77,28 +77,48 @@ impl Graph {
         let mut indented = IndentWriter::new("  ", &mut w);
         let mut indented: &mut dyn io::Write = &mut indented;
 
+        let mut whitespace = false;
+
         // Subgraphs
-        for subgraph in &self.subgraphs {
-            subgraph.write(
-                directed,
-                GraphType::Subgraph {
-                    cluster: subgraph.cluster,
-                },
-                &mut indented,
-            )?;
-            writeln!(indented)?;
+        if !self.subgraphs.is_empty() {
+            for subgraph in &self.subgraphs {
+                subgraph.write(
+                    directed,
+                    GraphType::Subgraph {
+                        cluster: subgraph.cluster,
+                    },
+                    &mut indented,
+                )?;
+                writeln!(indented)?;
+            }
+
+            whitespace = true;
         }
 
         // Nodes
-        for node in &self.nodes {
-            node.write(&mut indented)?;
-            writeln!(indented)?;
+        if !self.nodes.is_empty() {
+            if whitespace {
+                writeln!(indented)?;
+            }
+
+            for node in &self.nodes {
+                node.write(&mut indented)?;
+                writeln!(indented)?;
+            }
+
+            whitespace = true;
         }
 
         // Edges
-        for edge in &self.edges {
-            edge.write(directed, &mut indented)?;
-            writeln!(indented)?;
+        if !self.edges.is_empty() {
+            if whitespace {
+                writeln!(indented)?;
+            }
+
+            for edge in &self.edges {
+                edge.write(directed, &mut indented)?;
+                writeln!(indented)?;
+            }
         }
 
         write!(w, "}}")?;

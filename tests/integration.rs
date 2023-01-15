@@ -102,3 +102,29 @@ fn cluster() {
 
     compare(&dot, expected);
 }
+
+#[test]
+fn whitespace() {
+    let dot = Dot::new(
+        false,
+        Graph::new(None)
+            .subgraph(Graph::new(None))
+            .node(Node::new("a"))
+            .node(Node::new("b"))
+            .edge(Edge::new("a", "b")),
+    );
+
+    let expected = indoc! {"
+        graph {
+          subgraph {
+          }
+
+          a
+          b
+
+          a -- b
+        }"
+    };
+
+    compare(&dot, expected);
+}
