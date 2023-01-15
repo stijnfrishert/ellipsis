@@ -1,27 +1,30 @@
-use ellipsis::{write_to_string, Edge, Graph, Node, Shape};
+use ellipsis::{Dot, Edge, Graph, Node, Shape};
 use indoc::indoc;
 
-fn compare(graph: &Graph, directed: bool, expected: &str) {
-    let written = write_to_string(graph, directed).unwrap();
+fn compare(dot: &Dot, expected: &str) {
+    let written = dot.write_to_string().unwrap();
 
     assert_eq!(written, expected);
 }
 
 #[test]
 fn empty() {
-    let graph = Graph::new(Some("root".to_string()));
+    let dot = Dot::new(false, Graph::new(Some("root".to_string())));
 
     let expected = indoc! {"
         graph root {
         }"
     };
 
-    compare(&graph, false, expected);
+    compare(&dot, expected);
 }
 
 #[test]
 fn single_node() {
-    let graph = Graph::new(None).node(Node::new("a").label("A").shape(Some(Shape::Box)));
+    let dot = Dot::new(
+        false,
+        Graph::new(None).node(Node::new("a").label("A").shape(Some(Shape::Box))),
+    );
 
     let expected = indoc! {"
         graph {
@@ -29,12 +32,15 @@ fn single_node() {
         }"
     };
 
-    compare(&graph, false, expected);
+    compare(&dot, expected);
 }
 
 #[test]
 fn edge_undirected() {
-    let graph = Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0));
+    let dot = Dot::new(
+        false,
+        Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0)),
+    );
 
     let expected = indoc! {"
         graph {
@@ -42,12 +48,15 @@ fn edge_undirected() {
         }"
     };
 
-    compare(&graph, false, expected);
+    compare(&dot, expected);
 }
 
 #[test]
 fn edge_directed() {
-    let graph = Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0));
+    let dot = Dot::new(
+        true,
+        Graph::new(None).edge(Edge::new("a", "b").label("E").pen_width(2.0)),
+    );
 
     let expected = indoc! {"
         digraph {
@@ -55,12 +64,15 @@ fn edge_directed() {
         }"
     };
 
-    compare(&graph, true, expected);
+    compare(&dot, expected);
 }
 
 #[test]
 fn subgraph() {
-    let graph = Graph::new(None).subgraph(Graph::new(None).node(Node::new("a")));
+    let dot = Dot::new(
+        false,
+        Graph::new(None).subgraph(Graph::new(None).node(Node::new("a"))),
+    );
 
     let expected = indoc! {"
         graph {
@@ -70,12 +82,15 @@ fn subgraph() {
         }"
     };
 
-    compare(&graph, false, expected);
+    compare(&dot, expected);
 }
 
 #[test]
 fn cluster() {
-    let graph = Graph::new(None).subgraph(Graph::new(None).cluster().node(Node::new("a")));
+    let dot = Dot::new(
+        false,
+        Graph::new(None).subgraph(Graph::new(None).cluster().node(Node::new("a"))),
+    );
 
     let expected = indoc! {"
         graph {
@@ -85,5 +100,5 @@ fn cluster() {
         }"
     };
 
-    compare(&graph, false, expected);
+    compare(&dot, expected);
 }
