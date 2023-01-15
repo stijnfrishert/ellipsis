@@ -6,8 +6,10 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+hex = "0.4.3"
 indent_write = "2.2.0"
 tempfile = "3.3.0"
+thiserror = "1.0.38"
 
 [dev-dependencies]
 indoc = "1.0.8"

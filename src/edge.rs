@@ -1,4 +1,4 @@
-use crate::utils::sanitize;
+use crate::{utils::sanitize, Color};
 use std::io;
 
 pub struct Edge {
@@ -18,6 +18,10 @@ impl Edge {
 
     pub fn label(self, value: impl Into<String>) -> Self {
         self.attribute(EdgeAttribute::Label(value.into()))
+    }
+
+    pub fn color(self, value: Color) -> Self {
+        self.attribute(EdgeAttribute::Color(value))
     }
 
     pub fn pen_width(self, value: f32) -> Self {
@@ -66,6 +70,7 @@ impl Edge {
 
 pub enum EdgeAttribute {
     Label(String),
+    Color(Color),
     PenWidth(f32),
     HeadLabel(String),
     TailLabel(String),
@@ -76,6 +81,7 @@ impl EdgeAttribute {
     pub fn pair(&self) -> (&str, String) {
         match self {
             Self::Label(value) => ("label", value.clone()),
+            Self::Color(color) => ("color", color.as_string()),
             Self::PenWidth(value) => ("penwidth", format!("{value}")),
             Self::HeadLabel(value) => ("headlabel", value.clone()),
             Self::TailLabel(value) => ("taillabel", value.clone()),

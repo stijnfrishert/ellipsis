@@ -1,4 +1,4 @@
-use crate::utils::sanitize;
+use crate::{utils::sanitize, Color};
 use std::io;
 
 pub struct Node {
@@ -20,6 +20,10 @@ impl Node {
 
     pub fn shape(self, value: Option<Shape>) -> Self {
         self.attribute(NodeAttribute::Shape(value))
+    }
+
+    pub fn color(self, value: Color) -> Self {
+        self.attribute(NodeAttribute::Color(value))
     }
 
     pub fn attribute(mut self, attribute: NodeAttribute) -> Self {
@@ -54,6 +58,7 @@ impl Node {
 pub enum NodeAttribute {
     Label(String),
     Shape(Option<Shape>),
+    Color(Color),
     Unknown(String, String),
 }
 
@@ -68,6 +73,7 @@ impl NodeAttribute {
                     None => String::from("none"),
                 },
             ),
+            Self::Color(color) => ("color", color.as_string()),
             Self::Unknown(key, value) => (key, value.clone()),
         }
     }

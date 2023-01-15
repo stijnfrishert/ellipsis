@@ -1,12 +1,14 @@
 use std::{fs::File, io, path::Path, process::Command};
 use tempfile::NamedTempFile;
 
+mod color;
 mod edge;
 mod graph;
 mod node;
 
 pub(crate) mod utils;
 
+pub use color::Color;
 pub use edge::{Edge, EdgeAttribute};
 pub use graph::Graph;
 pub use node::{Node, NodeAttribute, Shape};
