@@ -43,8 +43,14 @@ impl Graph {
         self
     }
 
-    pub fn label(self, value: impl Into<Label>) -> Self {
-        self.attribute(GraphAttribute::Label(value.into()))
+    // --- Attributes --- //
+
+    pub fn label(self, label: impl Into<Label>) -> Self {
+        self.attribute(GraphAttribute::Label(label.into()))
+    }
+
+    pub fn margin(self, x: f32, y: f32) -> Self {
+        self.attribute(GraphAttribute::Margin(x, y))
     }
 
     pub fn attribute(mut self, attribute: GraphAttribute) -> Self {

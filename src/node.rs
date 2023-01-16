@@ -17,28 +17,33 @@ impl Node {
         }
     }
 
-    pub fn label(self, value: impl Into<Label>) -> Self {
-        self.attribute(NodeAttribute::Label(value.into()))
-    }
+    // --- Attributes --- //
 
-    pub fn shape(self, value: Option<Shape>) -> Self {
-        self.attribute(NodeAttribute::Shape(value))
-    }
-
-    /// The color of the outline
-    pub fn color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
-        let color = value.try_into()?;
+    pub fn color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
+        let color = color.try_into()?;
         Ok(self.attribute(NodeAttribute::Color(color)))
     }
 
-    pub fn fill_color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
-        let color = value.try_into()?;
+    pub fn fill_color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
+        let color = color.try_into()?;
         Ok(self.attribute(NodeAttribute::FillColor(color)))
     }
 
-    pub fn font_color<V: TryInto<Color>>(self, value: V) -> Result<Self, <V>::Error> {
-        let color = value.try_into()?;
+    pub fn font_color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
+        let color = color.try_into()?;
         Ok(self.attribute(NodeAttribute::FontColor(color)))
+    }
+
+    pub fn label(self, label: impl Into<Label>) -> Self {
+        self.attribute(NodeAttribute::Label(label.into()))
+    }
+
+    pub fn shape(self, shape: Option<Shape>) -> Self {
+        self.attribute(NodeAttribute::Shape(shape))
+    }
+
+    pub fn style(self, style: NodeStyle) -> Self {
+        self.attribute(NodeAttribute::Style(style))
     }
 
     pub fn attribute(mut self, attribute: NodeAttribute) -> Self {
@@ -63,6 +68,7 @@ pub enum NodeAttribute {
     FontColor(Color),
     Label(Label),
     Shape(Option<Shape>),
+    Style(NodeStyle),
     Unknown(String, String),
 }
 
@@ -72,14 +78,15 @@ impl Attribute for NodeAttribute {
             Self::Color(color) => ("color", color.as_string()),
             Self::FillColor(color) => ("fillcolor", color.as_string()),
             Self::FontColor(color) => ("fontcolor", color.as_string()),
-            Self::Label(value) => ("label", value.as_string()),
-            Self::Shape(value) => (
+            Self::Label(label) => ("label", label.as_string()),
+            Self::Shape(shape) => (
                 "shape",
-                match value {
+                match shape {
                     Some(shape) => shape.as_str().to_string(),
                     None => String::from("none"),
                 },
             ),
+            Self::Style(style) => ("style", style.as_str().to_string()),
             Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
@@ -103,6 +110,36 @@ impl Shape {
             Self::Note => "note",
             Self::Square => "square",
             Self::Unknown(str) => str,
+        }
+    }
+}
+
+pub enum NodeStyle {
+    Bold,
+    Dashed,
+    Diagonals,
+    Dotted,
+    Filled,
+    Invisible,
+    Rounded,
+    Solid,
+    Striped,
+    Wedged,
+}
+
+impl NodeStyle {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Bold => "bold",
+            Self::Dashed => "dashed",
+            Self::Diagonals => "diagonals",
+            Self::Dotted => "dotted",
+            Self::Filled => "filled",
+            Self::Invisible => "invis",
+            Self::Rounded => "rounded",
+            Self::Solid => "solid",
+            Self::Striped => "striped",
+            Self::Wedged => "wedged",
         }
     }
 }

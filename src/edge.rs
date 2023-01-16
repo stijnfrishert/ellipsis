@@ -19,28 +19,30 @@ impl Edge {
         }
     }
 
-    pub fn label(self, value: impl Into<Label>) -> Self {
-        self.attribute(EdgeAttribute::Label(value.into()))
+    // --- Attributes --- //
+
+    pub fn label(self, label: impl Into<Label>) -> Self {
+        self.attribute(EdgeAttribute::Label(label.into()))
     }
 
-    pub fn color(self, value: Color) -> Self {
-        self.attribute(EdgeAttribute::Color(value))
+    pub fn color(self, color: Color) -> Self {
+        self.attribute(EdgeAttribute::Color(color))
     }
 
-    pub fn style(self, value: EdgeStyle) -> Self {
-        self.attribute(EdgeAttribute::Style(value))
+    pub fn style(self, style: EdgeStyle) -> Self {
+        self.attribute(EdgeAttribute::Style(style))
     }
 
-    pub fn pen_width(self, value: f32) -> Self {
-        self.attribute(EdgeAttribute::PenWidth(value))
+    pub fn pen_width(self, width: f32) -> Self {
+        self.attribute(EdgeAttribute::PenWidth(width))
     }
 
-    pub fn head_label(self, value: impl Into<Label>) -> Self {
-        self.attribute(EdgeAttribute::HeadLabel(value.into()))
+    pub fn head_label(self, label: impl Into<Label>) -> Self {
+        self.attribute(EdgeAttribute::HeadLabel(label.into()))
     }
 
-    pub fn tail_label(self, value: impl Into<Label>) -> Self {
-        self.attribute(EdgeAttribute::TailLabel(value.into()))
+    pub fn tail_label(self, label: impl Into<Label>) -> Self {
+        self.attribute(EdgeAttribute::TailLabel(label.into()))
     }
 
     pub fn attribute(mut self, attribute: EdgeAttribute) -> Self {
@@ -76,35 +78,35 @@ pub enum EdgeAttribute {
 impl Attribute for EdgeAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
-            Self::Color(value) => ("color", value.as_string()),
-            Self::HeadLabel(value) => ("headlabel", value.as_string()),
-            Self::Label(value) => ("label", value.as_string()),
-            Self::PenWidth(value) => ("penwidth", format!("{value}")),
-            Self::Style(value) => ("style", value.as_str().to_string()),
-            Self::TailLabel(value) => ("taillabel", value.as_string()),
+            Self::Color(color) => ("color", color.as_string()),
+            Self::HeadLabel(label) => ("headlabel", label.as_string()),
+            Self::Label(label) => ("label", label.as_string()),
+            Self::PenWidth(width) => ("penwidth", format!("{width}")),
+            Self::Style(style) => ("style", style.as_str().to_string()),
+            Self::TailLabel(label) => ("taillabel", label.as_string()),
             Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
 }
 
 pub enum EdgeStyle {
+    Bold,
     Dashed,
     Dotted,
-    Solid,
     Invisible,
-    Bold,
+    Solid,
     Tapered,
 }
 
 impl EdgeStyle {
     pub fn as_str(&self) -> &str {
         match self {
-            EdgeStyle::Dashed => "dashed",
-            EdgeStyle::Dotted => "dotted",
-            EdgeStyle::Solid => "solid",
-            EdgeStyle::Invisible => "invis",
-            EdgeStyle::Bold => "bold",
-            EdgeStyle::Tapered => "tapered",
+            Self::Dashed => "dashed",
+            Self::Dotted => "dotted",
+            Self::Solid => "solid",
+            Self::Invisible => "invis",
+            Self::Bold => "bold",
+            Self::Tapered => "tapered",
         }
     }
 }
