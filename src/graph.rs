@@ -127,7 +127,7 @@ impl Graph {
     }
 }
 
-pub enum GraphType {
+pub(crate) enum GraphType {
     Root,
     Subgraph { cluster: bool },
 }
