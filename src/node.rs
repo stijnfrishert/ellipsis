@@ -58,19 +58,20 @@ impl Node {
 }
 
 pub enum NodeAttribute {
-    Label(Label),
-    Shape(Option<Shape>),
-
-    /// The color of the outline
     Color(Color),
     FillColor(Color),
     FontColor(Color),
+    Label(Label),
+    Shape(Option<Shape>),
     Unknown(String, String),
 }
 
 impl Attribute for NodeAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
+            Self::Color(color) => ("color", color.as_string()),
+            Self::FillColor(color) => ("fillcolor", color.as_string()),
+            Self::FontColor(color) => ("fontcolor", color.as_string()),
             Self::Label(value) => ("label", value.as_string()),
             Self::Shape(value) => (
                 "shape",
@@ -79,9 +80,6 @@ impl Attribute for NodeAttribute {
                     None => String::from("none"),
                 },
             ),
-            Self::Color(color) => ("color", color.as_string()),
-            Self::FillColor(color) => ("fillcolor", color.as_string()),
-            Self::FontColor(color) => ("fontcolor", color.as_string()),
             Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
@@ -91,8 +89,8 @@ pub enum Shape {
     Box,
     Circle,
     Diamond,
-    Square,
     Note,
+    Square,
     Unknown(String),
 }
 
@@ -102,8 +100,8 @@ impl Shape {
             Self::Box => "box",
             Self::Circle => "circle",
             Self::Diamond => "diamond",
-            Self::Square => "square",
             Self::Note => "note",
+            Self::Square => "square",
             Self::Unknown(str) => str,
         }
     }

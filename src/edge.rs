@@ -64,11 +64,11 @@ impl Edge {
 }
 
 pub enum EdgeAttribute {
-    Label(Label),
     Color(Color),
-    Style(EdgeStyle),
-    PenWidth(f32),
     HeadLabel(Label),
+    Label(Label),
+    PenWidth(f32),
+    Style(EdgeStyle),
     TailLabel(Label),
     Unknown(String, String),
 }
@@ -76,11 +76,11 @@ pub enum EdgeAttribute {
 impl Attribute for EdgeAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
-            Self::Label(value) => ("label", value.as_string()),
             Self::Color(value) => ("color", value.as_string()),
-            Self::Style(value) => ("style", value.as_str().to_string()),
-            Self::PenWidth(value) => ("penwidth", format!("{value}")),
             Self::HeadLabel(value) => ("headlabel", value.as_string()),
+            Self::Label(value) => ("label", value.as_string()),
+            Self::PenWidth(value) => ("penwidth", format!("{value}")),
+            Self::Style(value) => ("style", value.as_str().to_string()),
             Self::TailLabel(value) => ("taillabel", value.as_string()),
             Self::Unknown(key, value) => (key, sanitize(value)),
         }
