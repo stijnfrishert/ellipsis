@@ -1,4 +1,7 @@
-use crate::{utils::sanitize, Color, Label};
+use crate::{
+    utils::{sanitize, write_attributes, Attribute},
+    Color, Label,
+};
 use std::io;
 
 pub struct Edge {
@@ -53,19 +56,7 @@ impl Edge {
         }
 
         if !self.attributes.is_empty() {
-            write!(w, " [")?;
-
-            let mut count = self.attributes.len();
-            for attribute in &self.attributes {
-                let (key, value) = attribute.pair();
-                write!(w, "{}={}", sanitize(key), sanitize(&value))?;
-
-                count -= 1;
-                if count > 0 {
-                    write!(w, ", ")?;
-                }
-            }
-            write!(w, "]")?;
+            write_attributes(self.attributes.iter(), w)?;
         }
 
         Ok(())
@@ -82,8 +73,8 @@ pub enum EdgeAttribute {
     Unknown(String, String),
 }
 
-impl EdgeAttribute {
-    pub fn pair(&self) -> (&str, String) {
+impl Attribute for EdgeAttribute {
+    fn pair(&self) -> (&str, String) {
         match self {
             Self::Label(value) => ("label", value.as_string()),
             Self::Color(value) => ("color", value.as_string()),

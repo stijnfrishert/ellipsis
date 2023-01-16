@@ -9,10 +9,11 @@ fn compare(dot: &Dot, expected: &str) {
 
 #[test]
 fn empty() {
-    let dot = Dot::new(false, Graph::new(Some("root".to_string())));
+    let dot = Dot::new(false, Graph::new(Some("root".to_string())).label("MyGraph"));
 
     let expected = indoc! {"
         graph root {
+          label=MyGraph
         }"
     };
 

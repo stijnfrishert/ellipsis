@@ -1,11 +1,15 @@
-use crate::{utils::sanitize, Edge, Node};
+use crate::{
+    utils::{sanitize, write_attribute, Attribute},
+    Edge, Label, Node,
+};
 use indent_write::io::IndentWriter;
 use std::io;
 
 #[derive(Default)]
 pub struct Graph {
-    pub name: Option<String>,
+    pub id: Option<String>,
     cluster: bool,
+    pub attributes: Vec<GraphAttribute>,
     pub subgraphs: Vec<Graph>,
     pub nodes: Vec<Node>,
     pub edges: Vec<Edge>,
@@ -14,7 +18,7 @@ pub struct Graph {
 impl Graph {
     pub fn new(name: Option<String>) -> Self {
         Self {
-            name,
+            id: name,
             ..Default::default()
         }
     }
@@ -36,6 +40,15 @@ impl Graph {
 
     pub fn edge(mut self, edge: Edge) -> Self {
         self.edges.push(edge);
+        self
+    }
+
+    pub fn label(self, value: impl Into<Label>) -> Self {
+        self.attribute(GraphAttribute::Label(value.into()))
+    }
+
+    pub fn attribute(mut self, attribute: GraphAttribute) -> Self {
+        self.attributes.push(attribute);
         self
     }
 
@@ -61,7 +74,7 @@ impl Graph {
             }
         };
 
-        if let Some(name) = &self.name {
+        if let Some(name) = &self.id {
             if cluster {
                 let name = format!("cluster_{name}");
                 write!(w, " {}", sanitize(&name))?;
@@ -79,8 +92,21 @@ impl Graph {
 
         let mut whitespace = false;
 
+        // Attributes
+        if !self.attributes.is_empty() {
+            whitespace = true;
+            for attribute in &self.attributes {
+                write_attribute(attribute, &mut indented)?;
+                writeln!(indented)?;
+            }
+        }
+
         // Subgraphs
         if !self.subgraphs.is_empty() {
+            if whitespace {
+                writeln!(indented)?;
+            }
+
             for subgraph in &self.subgraphs {
                 subgraph.write(
                     directed,
@@ -130,4 +156,16 @@ impl Graph {
 pub(crate) enum GraphType {
     Root,
     Subgraph { cluster: bool },
+}
+
+pub enum GraphAttribute {
+    Label(Label),
+}
+
+impl Attribute for GraphAttribute {
+    fn pair(&self) -> (&str, String) {
+        match self {
+            Self::Label(label) => ("label", label.as_string()),
+        }
+    }
 }

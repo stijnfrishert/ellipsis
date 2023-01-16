@@ -1,4 +1,7 @@
-use crate::{utils::sanitize, Color, Label};
+use crate::{
+    utils::{sanitize, write_attributes, Attribute},
+    Color, Label,
+};
 use std::io;
 
 pub struct Node {
@@ -40,7 +43,6 @@ impl Node {
 
     pub fn attribute(mut self, attribute: NodeAttribute) -> Self {
         self.attributes.push(attribute);
-
         self
     }
 
@@ -48,19 +50,7 @@ impl Node {
         write!(w, "{}", sanitize(&self.id))?;
 
         if !self.attributes.is_empty() {
-            write!(w, " [")?;
-
-            let mut count = self.attributes.len();
-            for attribute in &self.attributes {
-                let (key, value) = attribute.pair();
-                write!(w, "{}={}", key, &value)?;
-
-                count -= 1;
-                if count > 0 {
-                    write!(w, ", ")?;
-                }
-            }
-            write!(w, "]")?;
+            write_attributes(self.attributes.iter(), w)?;
         }
 
         Ok(())
@@ -78,8 +68,8 @@ pub enum NodeAttribute {
     Unknown(String, String),
 }
 
-impl NodeAttribute {
-    pub fn pair(&self) -> (&str, String) {
+impl Attribute for NodeAttribute {
+    fn pair(&self) -> (&str, String) {
         match self {
             Self::Label(value) => ("label", value.as_string()),
             Self::Shape(value) => (
