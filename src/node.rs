@@ -1,4 +1,4 @@
-use crate::{utils::sanitize, Color};
+use crate::{utils::sanitize, Color, Label};
 use std::io;
 
 pub struct Node {
@@ -14,7 +14,7 @@ impl Node {
         }
     }
 
-    pub fn label(self, value: impl Into<String>) -> Self {
+    pub fn label(self, value: impl Into<Label>) -> Self {
         self.attribute(NodeAttribute::Label(value.into()))
     }
 
@@ -53,7 +53,7 @@ impl Node {
             let mut count = self.attributes.len();
             for attribute in &self.attributes {
                 let (key, value) = attribute.pair();
-                write!(w, "{}={}", sanitize(key), sanitize(&value))?;
+                write!(w, "{}={}", key, &value)?;
 
                 count -= 1;
                 if count > 0 {
@@ -68,7 +68,7 @@ impl Node {
 }
 
 pub enum NodeAttribute {
-    Label(String),
+    Label(Label),
     Shape(Option<Shape>),
 
     /// The color of the outline
@@ -81,7 +81,7 @@ pub enum NodeAttribute {
 impl NodeAttribute {
     pub fn pair(&self) -> (&str, String) {
         match self {
-            Self::Label(value) => ("label", value.clone()),
+            Self::Label(value) => ("label", value.as_string()),
             Self::Shape(value) => (
                 "shape",
                 match value {
@@ -92,7 +92,7 @@ impl NodeAttribute {
             Self::Color(color) => ("color", color.as_string()),
             Self::FillColor(color) => ("fillcolor", color.as_string()),
             Self::FontColor(color) => ("fontcolor", color.as_string()),
-            Self::Unknown(key, value) => (key, value.clone()),
+            Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
 }

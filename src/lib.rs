@@ -4,6 +4,7 @@ use tempfile::NamedTempFile;
 mod color;
 mod edge;
 mod graph;
+mod label;
 mod node;
 
 pub(crate) mod utils;
@@ -11,6 +12,7 @@ pub(crate) mod utils;
 pub use color::{Color, ColorParseError};
 pub use edge::{Edge, EdgeAttribute};
 pub use graph::Graph;
+pub use label::Label;
 pub use node::{Node, NodeAttribute, Shape};
 
 pub struct Dot {

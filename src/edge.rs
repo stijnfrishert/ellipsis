@@ -1,4 +1,4 @@
-use crate::{utils::sanitize, Color};
+use crate::{utils::sanitize, Color, Label};
 use std::io;
 
 pub struct Edge {
@@ -16,7 +16,7 @@ impl Edge {
         }
     }
 
-    pub fn label(self, value: impl Into<String>) -> Self {
+    pub fn label(self, value: impl Into<Label>) -> Self {
         self.attribute(EdgeAttribute::Label(value.into()))
     }
 
@@ -28,11 +28,11 @@ impl Edge {
         self.attribute(EdgeAttribute::PenWidth(value))
     }
 
-    pub fn head_label(self, value: impl Into<String>) -> Self {
+    pub fn head_label(self, value: impl Into<Label>) -> Self {
         self.attribute(EdgeAttribute::HeadLabel(value.into()))
     }
 
-    pub fn tail_label(self, value: impl Into<String>) -> Self {
+    pub fn tail_label(self, value: impl Into<Label>) -> Self {
         self.attribute(EdgeAttribute::TailLabel(value.into()))
     }
 
@@ -69,23 +69,23 @@ impl Edge {
 }
 
 pub enum EdgeAttribute {
-    Label(String),
+    Label(Label),
     Color(Color),
     PenWidth(f32),
-    HeadLabel(String),
-    TailLabel(String),
+    HeadLabel(Label),
+    TailLabel(Label),
     Unknown(String, String),
 }
 
 impl EdgeAttribute {
     pub fn pair(&self) -> (&str, String) {
         match self {
-            Self::Label(value) => ("label", value.clone()),
+            Self::Label(value) => ("label", value.as_string()),
             Self::Color(color) => ("color", color.as_string()),
             Self::PenWidth(value) => ("penwidth", format!("{value}")),
-            Self::HeadLabel(value) => ("headlabel", value.clone()),
-            Self::TailLabel(value) => ("taillabel", value.clone()),
-            Self::Unknown(key, value) => (key, value.clone()),
+            Self::HeadLabel(value) => ("headlabel", value.as_string()),
+            Self::TailLabel(value) => ("taillabel", value.as_string()),
+            Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
 }
