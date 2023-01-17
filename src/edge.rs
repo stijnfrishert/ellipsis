@@ -2,7 +2,7 @@ use crate::{
     utils::{sanitize, write_attributes, Attribute},
     Color, Label,
 };
-use std::io;
+use std::{fmt::Debug, io};
 
 pub struct Edge {
     pub from: String,
@@ -25,7 +25,12 @@ impl Edge {
         self.attribute(EdgeAttribute::Label(label.into()))
     }
 
-    pub fn color(self, color: Color) -> Self {
+    pub fn color<C>(self, color: C) -> Self
+    where
+        C: TryInto<Color>,
+        C::Error: Debug,
+    {
+        let color = color.try_into().unwrap();
         self.attribute(EdgeAttribute::Color(color))
     }
 
@@ -78,7 +83,7 @@ pub enum EdgeAttribute {
 impl Attribute for EdgeAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
-            Self::Color(color) => ("color", color.as_string()),
+            Self::Color(color) => ("color", sanitize(&color.as_string())),
             Self::HeadLabel(label) => ("headlabel", label.as_string()),
             Self::Label(label) => ("label", label.as_string()),
             Self::PenWidth(width) => ("penwidth", format!("{width}")),

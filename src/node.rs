@@ -2,7 +2,7 @@ use crate::{
     utils::{sanitize, write_attributes, Attribute},
     Color, Label,
 };
-use std::io;
+use std::{fmt::Debug, io};
 
 pub struct Node {
     pub id: String,
@@ -19,19 +19,31 @@ impl Node {
 
     // --- Attributes --- //
 
-    pub fn color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
-        let color = color.try_into()?;
-        Ok(self.attribute(NodeAttribute::Color(color)))
+    pub fn color<C>(self, color: C) -> Self
+    where
+        C: TryInto<Color>,
+        C::Error: Debug,
+    {
+        let color = color.try_into().unwrap();
+        self.attribute(NodeAttribute::Color(color))
     }
 
-    pub fn fill_color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
-        let color = color.try_into()?;
-        Ok(self.attribute(NodeAttribute::FillColor(color)))
+    pub fn fill_color<C>(self, color: C) -> Self
+    where
+        C: TryInto<Color>,
+        C::Error: Debug,
+    {
+        let color = color.try_into().unwrap();
+        self.attribute(NodeAttribute::FillColor(color))
     }
 
-    pub fn font_color<V: TryInto<Color>>(self, color: V) -> Result<Self, <V>::Error> {
-        let color = color.try_into()?;
-        Ok(self.attribute(NodeAttribute::FontColor(color)))
+    pub fn font_color<C>(self, color: C) -> Self
+    where
+        C: TryInto<Color>,
+        C::Error: Debug,
+    {
+        let color = color.try_into().unwrap();
+        self.attribute(NodeAttribute::FontColor(color))
     }
 
     pub fn label(self, label: impl Into<Label>) -> Self {
@@ -75,9 +87,9 @@ pub enum NodeAttribute {
 impl Attribute for NodeAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
-            Self::Color(color) => ("color", color.as_string()),
-            Self::FillColor(color) => ("fillcolor", color.as_string()),
-            Self::FontColor(color) => ("fontcolor", color.as_string()),
+            Self::Color(color) => ("color", sanitize(&color.as_string())),
+            Self::FillColor(color) => ("fillcolor", sanitize(&color.as_string())),
+            Self::FontColor(color) => ("fontcolor", sanitize(&color.as_string())),
             Self::Label(label) => ("label", label.as_string()),
             Self::Shape(shape) => (
                 "shape",
