@@ -178,7 +178,7 @@ impl Attribute for GraphAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
             Self::Label(label) => ("label", label.as_string()),
-            Self::Margin(x, y) => ("margin", format!("{x}, {y}")),
+            Self::Margin(x, y) => ("margin", format!("\"{x},{y}\"")),
         }
     }
 }
