@@ -98,15 +98,6 @@ impl Graph {
 
         let mut whitespace = false;
 
-        // Attributes
-        if !self.attributes.is_empty() {
-            whitespace = true;
-            for attribute in &self.attributes {
-                write_attribute(attribute, &mut indented)?;
-                writeln!(indented)?;
-            }
-        }
-
         // Subgraphs
         if !self.subgraphs.is_empty() {
             if whitespace {
@@ -149,6 +140,20 @@ impl Graph {
 
             for edge in &self.edges {
                 edge.write(directed, &mut indented)?;
+                writeln!(indented)?;
+            }
+
+            whitespace = true;
+        }
+
+        // Attributes
+        if !self.attributes.is_empty() {
+            if whitespace {
+                writeln!(indented)?;
+            }
+
+            for attribute in &self.attributes {
+                write_attribute(attribute, &mut indented)?;
                 writeln!(indented)?;
             }
         }

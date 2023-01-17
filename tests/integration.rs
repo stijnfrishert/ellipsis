@@ -9,11 +9,10 @@ fn compare(dot: &Dot, expected: &str) {
 
 #[test]
 fn empty() {
-    let dot = Dot::new(false, Graph::new(Some("root".to_string())).label("MyGraph"));
+    let dot = Dot::new(false, Graph::new(Some("root".to_string())));
 
     let expected = indoc! {"
         graph root {
-          label=MyGraph
         }"
     };
 
@@ -24,12 +23,16 @@ fn empty() {
 fn single_node() {
     let dot = Dot::new(
         false,
-        Graph::new(None).node(Node::new("a").label("A").shape(Some(Shape::Box))),
+        Graph::new(None)
+            .label("MyGraph")
+            .node(Node::new("a").label("A").shape(Some(Shape::Box))),
     );
 
     let expected = indoc! {"
         graph {
           a [label=A, shape=box]
+
+          label=MyGraph
         }"
     };
 
