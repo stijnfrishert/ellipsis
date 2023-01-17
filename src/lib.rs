@@ -13,7 +13,7 @@ pub use color::{Color, ColorParseError};
 pub use edge::{Edge, EdgeAttribute, EdgeStyle};
 pub use graph::Graph;
 pub use label::Label;
-pub use node::{Node, NodeAttribute, Shape};
+pub use node::{Node, NodeAttribute, Shape, NodeStyle};
 
 pub struct Dot {
     directed: bool,
