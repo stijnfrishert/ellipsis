@@ -1,6 +1,6 @@
 use crate::{
     utils::{sanitize, write_attributes, Attribute},
-    Color, Label,
+    Color, CompassPoint, Label,
 };
 use std::{fmt::Debug, io};
 
@@ -21,10 +21,6 @@ impl Edge {
 
     // --- Attributes --- //
 
-    pub fn label(self, label: impl Into<Label>) -> Self {
-        self.attribute(EdgeAttribute::Label(label.into()))
-    }
-
     pub fn color<C>(self, color: C) -> Self
     where
         C: TryInto<Color>,
@@ -34,20 +30,32 @@ impl Edge {
         self.attribute(EdgeAttribute::Color(color))
     }
 
-    pub fn style(self, style: EdgeStyle) -> Self {
-        self.attribute(EdgeAttribute::Style(style))
-    }
-
-    pub fn pen_width(self, width: f32) -> Self {
-        self.attribute(EdgeAttribute::PenWidth(width))
-    }
-
     pub fn head_label(self, label: impl Into<Label>) -> Self {
         self.attribute(EdgeAttribute::HeadLabel(label.into()))
     }
 
+    pub fn head_port(self, port: impl Into<CompassPoint>) -> Self {
+        self.attribute(EdgeAttribute::HeadPort(port.into()))
+    }
+
+    pub fn label(self, label: impl Into<Label>) -> Self {
+        self.attribute(EdgeAttribute::Label(label.into()))
+    }
+
+    pub fn style(self, style: EdgeStyle) -> Self {
+        self.attribute(EdgeAttribute::Style(style))
+    }
+
     pub fn tail_label(self, label: impl Into<Label>) -> Self {
         self.attribute(EdgeAttribute::TailLabel(label.into()))
+    }
+
+    pub fn tail_port(self, port: impl Into<CompassPoint>) -> Self {
+        self.attribute(EdgeAttribute::TailPort(port.into()))
+    }
+
+    pub fn pen_width(self, width: f32) -> Self {
+        self.attribute(EdgeAttribute::PenWidth(width))
     }
 
     pub fn attribute(mut self, attribute: EdgeAttribute) -> Self {
@@ -73,10 +81,12 @@ impl Edge {
 pub enum EdgeAttribute {
     Color(Color),
     HeadLabel(Label),
+    HeadPort(CompassPoint),
     Label(Label),
     PenWidth(f32),
     Style(EdgeStyle),
     TailLabel(Label),
+    TailPort(CompassPoint),
     Unknown(String, String),
 }
 
@@ -85,10 +95,12 @@ impl Attribute for EdgeAttribute {
         match self {
             Self::Color(color) => ("color", sanitize(&color.as_string())),
             Self::HeadLabel(label) => ("headlabel", label.as_string()),
+            Self::HeadPort(compass_point) => ("headport", compass_point.as_str().to_string()),
             Self::Label(label) => ("label", label.as_string()),
             Self::PenWidth(width) => ("penwidth", format!("{width}")),
             Self::Style(style) => ("style", style.as_str().to_string()),
             Self::TailLabel(label) => ("taillabel", label.as_string()),
+            Self::TailPort(compass_point) => ("tailport", compass_point.as_str().to_string()),
             Self::Unknown(key, value) => (key, sanitize(value)),
         }
     }
@@ -104,7 +116,7 @@ pub enum EdgeStyle {
 }
 
 impl EdgeStyle {
-    pub fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> &'static str {
         match self {
             Self::Dashed => "dashed",
             Self::Dotted => "dotted",

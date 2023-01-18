@@ -7,13 +7,15 @@ mod graph;
 mod label;
 mod node;
 
+mod compass_point;
 pub(crate) mod utils;
 
 pub use color::{Color, ColorParseError};
+pub use compass_point::CompassPoint;
 pub use edge::{Edge, EdgeAttribute, EdgeStyle};
 pub use graph::Graph;
 pub use label::Label;
-pub use node::{Node, NodeAttribute, Shape, NodeStyle};
+pub use node::{Node, NodeAttribute, NodeStyle, Shape};
 
 pub struct Dot {
     directed: bool,

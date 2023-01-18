@@ -140,7 +140,7 @@ pub enum NodeStyle {
 }
 
 impl NodeStyle {
-    pub fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> &'static str {
         match self {
             Self::Bold => "bold",
             Self::Dashed => "dashed",
