@@ -3,14 +3,14 @@ use crate::utils::sanitize;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Label {
     Text(String),
-    Html(String),
+    HtmlLike(String),
 }
 
 impl Label {
     pub fn as_string(&self) -> String {
         match self {
             Self::Text(string) => sanitize(&string),
-            Self::Html(string) => string.clone(),
+            Self::HtmlLike(string) => string.clone(),
         }
     }
 }
@@ -38,7 +38,7 @@ mod tests {
 
         // HTML-like
         assert_eq!(
-            Label::Html("<<bold>a</bold>>".into()).as_string(),
+            Label::HtmlLike("<<bold>a</bold>>".into()).as_string(),
             "<<bold>a</bold>>"
         );
     }
