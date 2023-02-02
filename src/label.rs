@@ -9,7 +9,7 @@ pub enum Label {
 impl Label {
     pub fn as_string(&self) -> String {
         match self {
-            Self::Text(string) => sanitize(&string),
+            Self::Text(string) => sanitize(string),
             Self::HtmlLike(string) => string.clone(),
         }
     }

@@ -1,5 +1,6 @@
 use std::{fs::File, io, path::Path, process::Command};
 use tempfile::NamedTempFile;
+use thiserror::Error;
 
 mod color;
 mod edge;
@@ -38,7 +39,7 @@ impl Dot {
         Ok(String::from_utf8(vec).unwrap())
     }
 
-    pub fn render(&self, path: impl AsRef<Path>, write_dot_file: bool) -> io::Result<bool> {
+    pub fn render(&self, path: impl AsRef<Path>, write_dot_file: bool) -> Result<(), RenderError> {
         let path = path.as_ref();
 
         if write_dot_file {
@@ -46,16 +47,18 @@ impl Dot {
             let dot_file = File::create(&dot_path)?;
             self.write(&dot_file)?;
 
-            Self::render_from_file(&dot_path, path)
+            Self::run_dot(&dot_path, path)?;
         } else {
             let temp = NamedTempFile::new().unwrap();
             self.write(&temp)?;
 
-            Self::render_from_file(temp.path(), path)
+            Self::run_dot(temp.path(), path)?;
         }
+
+        Ok(())
     }
 
-    pub fn render_from_file(dot: impl AsRef<Path>, path: impl AsRef<Path>) -> io::Result<bool> {
+    pub fn run_dot(dot: impl AsRef<Path>, path: impl AsRef<Path>) -> Result<(), RenderError> {
         let status = Command::new("dot")
             .arg("-Tpng")
             .arg("-o")
@@ -63,6 +66,19 @@ impl Dot {
             .arg(dot.as_ref())
             .status()?;
 
-        Ok(status.success())
+        if status.success() {
+            Ok(())
+        } else {
+            Err(RenderError::Dot(status.code()))
+        }
     }
+}
+
+#[derive(Debug, Error)]
+pub enum RenderError {
+    #[error("File I/O failed")]
+    IO(#[from] io::Error),
+
+    #[error("Running `dot` failed")]
+    Dot(Option<i32>),
 }
