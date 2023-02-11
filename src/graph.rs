@@ -45,6 +45,10 @@ impl Graph {
 
     // --- Attributes --- //
 
+    pub fn compound(self, compound: bool) -> Self {
+        self.attribute(GraphAttribute::Compound(compound))
+    }
+
     pub fn label(self, label: impl Into<Label>) -> Self {
         self.attribute(GraphAttribute::Label(label.into()))
     }
@@ -170,6 +174,7 @@ pub(crate) enum GraphType {
 }
 
 pub enum GraphAttribute {
+    Compound(bool),
     Label(Label),
     Margin(f32, f32),
 }
@@ -177,6 +182,10 @@ pub enum GraphAttribute {
 impl Attribute for GraphAttribute {
     fn pair(&self) -> (&str, String) {
         match self {
+            Self::Compound(compound) => (
+                "compound",
+                String::from(if *compound { "true" } else { "false" }),
+            ),
             Self::Label(label) => ("label", label.as_string()),
             Self::Margin(x, y) => ("margin", format!("\"{x},{y}\"")),
         }
