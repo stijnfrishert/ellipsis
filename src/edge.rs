@@ -42,6 +42,14 @@ impl Edge {
         self.attribute(EdgeAttribute::Label(label.into()))
     }
 
+    pub fn lhead(self, lhead: impl Into<String>) -> Self {
+        self.attribute(EdgeAttribute::LHead(lhead.into()))
+    }
+
+    pub fn ltail(self, ltail: impl Into<String>) -> Self {
+        self.attribute(EdgeAttribute::LTail(ltail.into()))
+    }
+
     pub fn style(self, style: EdgeStyle) -> Self {
         self.attribute(EdgeAttribute::Style(style))
     }
@@ -91,6 +99,8 @@ pub enum EdgeAttribute {
     HeadLabel(Label),
     HeadPort(CompassPoint),
     Label(Label),
+    LHead(String),
+    LTail(String),
     PenWidth(f32),
     SameHead(String),
     SameTail(String),
@@ -107,6 +117,8 @@ impl Attribute for EdgeAttribute {
             Self::HeadLabel(label) => ("headlabel", label.as_string()),
             Self::HeadPort(compass_point) => ("headport", compass_point.as_str().to_string()),
             Self::Label(label) => ("label", label.as_string()),
+            Self::LHead(head) => ("lhead", sanitize(head)),
+            Self::LTail(tail) => ("ltail", sanitize(tail)),
             Self::PenWidth(width) => ("penwidth", format!("{width}")),
             Self::Style(style) => ("style", style.as_str().to_string()),
             Self::SameHead(samehead) => ("samehead", sanitize(samehead)),
