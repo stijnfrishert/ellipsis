@@ -19,8 +19,8 @@ pub use label::Label;
 pub use node::{Node, NodeAttribute, NodeStyle, Shape};
 
 pub struct Dot {
-    directed: bool,
-    graph: Graph,
+    pub directed: bool,
+    pub graph: Graph,
 }
 
 impl Dot {
